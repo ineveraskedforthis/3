@@ -1,0 +1,19 @@
+cflags = -O1
+libs = -Wl,-R. -l:libmicrohttpd.a -L../../libs -L../logic/verify/.lake/build/lib -l:libGame.a -lInit_shared -lleanshared_1 -lleanshared
+include_folders = -Iinclude
+rule compile_c
+  command = gcc $cflags $include_folders $in $libs -o $out
+
+rule lean
+  command = cd ../logic/verify && lake build
+
+rule copy
+  command = cp $in $out
+
+build ../logic/verify/.lake/build/lib/libGame.a: lean ../logic/verify/Game.lean
+
+build ../../out/server: compile_c main.c | ../logic/verify/.lake/build/lib/libGame.a
+build ../../out/libInit_shared.so: copy ../../libs/libInit_shared.so
+build ../../out/libLake_shared.so: copy ../../libs/libLake_shared.so
+build ../../out/libleanshared.so: copy ../../libs/libleanshared.so
+build ../../out/libleanshared_1.so: copy ../../libs/libleanshared_1.so
