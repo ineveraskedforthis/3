@@ -1,18 +1,48 @@
-cflags = -O1
-libs = -Wl,-R. -l:libmicrohttpd.a -L../../libs -L../logic/verify/.lake/build/lib -l:libGame.a -lInit_shared -lleanshared_1 -lleanshared
-include_folders = -Iinclude
+cflags = -std=c++20 -O3 -DPREFER_ONE_TBB 
+lean_libs = -lInit_shared -lleanshared_1 -lleanshared
+http_lib = -l:libmicrohttpd.a
+hashing_lib = -l:libargon2.a
+parallel_lib = -ltbb
+paths = -Wl,-R./../libs -L../../libs -L../logic/verify/.lake/build/lib 
+include_folders = -Iinclude -I../../DataContainer/CommonIncludes
 rule compile_c
-  command = gcc $cflags $include_folders $in $libs -o $out
+  command = g++ $cflags $in $include_folders $paths -l:libGame.a $lean_libs $http_lib $hashing_lib $parallel_lib -o $out
+
+
+rule compile_cpp_simple
+  command = g++ $in -o $out
+
+rule build_argon
+  command = cd ../../phc-winner-argon2 && make PREFIX=../libs && cp ./libargon2.a ../libs/libargon2.a
 
 rule lean
   command = cd ../logic/verify && lake build
+  restat = 1
 
 rule copy
   command = cp $in $out
 
-build ../logic/verify/.lake/build/lib/libGame.a: lean ../logic/verify/Game.lean
+rule generate_dcon_headers
+  command = ./CodeGen $in
+  restat = 1
 
-build ../../out/server: compile_c main.c | ../logic/verify/.lake/build/lib/libGame.a
+rule touch
+  command = touch $out
+
+
+build ../../out/temp/argon_built_flag : touch
+
+build ../../libs/libargon2.a : build_argon ../../out/temp/argon_built_flag
+
+build CodeGen: compile_cpp_simple ../../DataContainer/DataContainerGenerator/DataContainerGenerator.cpp ../../DataContainer/DataContainerGenerator/parsing.cpp ../../DataContainer/DataContainerGenerator/code_fragments.cpp ../../DataContainer/DataContainerGenerator/query_fragments.cpp ../../DataContainer/DataContainerGenerator/object_member_fragments.cpp ../../DataContainer/DataContainerGenerator/serialize_fragments.cpp
+
+build objects.hpp: generate_dcon_headers objects.txt | CodeGen
+
+build ../logic/verify/.lake/build/lib/libGame.a: lean | ../logic/verify/Game.lean
+
+
+build ../../out/server: compile_c main.cpp lean_functions.c | ../logic/verify/.lake/build/lib/libGame.a objects.hpp ../../libs/libargon2.a
+
 build ../../out/libInit_shared.so: copy ../../libs/libInit_shared.so
 build ../../out/libLake_shared.so: copy ../../libs/libLake_shared.so
 build ../../out/libleanshared.so: copy ../../libs/libleanshared.so

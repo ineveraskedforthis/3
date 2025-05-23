@@ -1,0 +1,46 @@
+body {
+    background-image: url(/img/base_background.png);
+    background-repeat: repeat;
+    font-family: "Arial", sans-serif;
+    font-size: small;
+    overflow: hidden;
+}
+
+.centered-form {
+	position: absolute;
+	left: 40%;
+	right: 40%;
+	top: 20%;
+	height: 20%;
+	border: 1px solid;
+	box-shadow: 5px 10px rgb(56, 56, 70, .56);
+	background: rgb(56, 56, 96, .36);
+}
+
+.centered-form > form > input {
+	position: relative;
+	width: 80%;
+	margin-left: 10%;
+	margin-right: 10%;
+	margin-top: 10px;
+}
+
+.footer {
+	position: absolute;
+	bottom: 10%;
+	height: 10%;
+	width: 100%;
+	text-align: center;
+	background-color: rgb(200, 200, 200);
+}
+
+.fade-bg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(0, 0, 33, .43);
+}

@@ -1,0 +1,126 @@
+
+load_save{
+	name{everything}
+}
+
+object{
+	name{user}
+	storage_type{contiguous}
+	size{10000}
+	tag{persistent}
+	property{
+		name{login}
+		type{array{uint8_t}{uint8_t}}
+		tag{persistent}
+	}
+	property{
+		name{password_hash}
+		type{array{uint8_t}{int32_t}}
+		tag{persistent}
+	}
+
+	property{
+		name{is_tester}
+		type{bitfield}
+		tag{persistent}
+	}
+
+	property{
+		name{is_admin}
+		type{bitfield}
+		tag{persistent}
+	}
+
+	property{
+		name{session}
+		type{array{uint8_t}{int8_t}}
+		tag{persistent}
+	}
+}
+
+object{
+	name{character}
+	storage_type{erasable}
+	size{100000}
+	tag{persistent}
+	property{
+		name{name}
+		type{array{uint8_t}{uint8_t}}
+		tag{persistent}
+	}
+}
+
+object{
+	name{location}
+	storage_type{contiguous}
+	size{5000000}
+	tag{persistent}
+}
+
+object{
+	name{cell}
+	storage_type{contiguous}
+	size{1000000}
+	tag{persistent}
+
+	property{
+		name{rat_smell}
+		type{float}
+		tag{persistent}
+	}
+}
+
+relationship{
+	name{local_locations}
+	storage_type{erasable}
+	size{100000}
+	link{
+		object{cell}
+		name{cell}
+		type{many}
+		index_storage{array}
+	}
+	link{
+		object{location}
+		name{location}
+		type{unique}
+	}
+}
+
+relationship{
+	name{character_position}
+	storage_type{erasable}
+	size{100000}
+	link{
+		object{location}
+		name{location}
+		type{unique}
+	}
+
+	link{
+		object{character}
+		name{character}
+		type{many}
+		index_storage{array}
+	}
+}
+
+relationship{
+	name{owned_character}
+	storage_type{erasable}
+	size{100000}
+	tag{persistent}
+
+	link{
+		object{user}
+		name{user}
+		type{unique}
+	}
+
+	link{
+		object{character}
+		name{character}
+		type{unique}
+	}
+}
+
