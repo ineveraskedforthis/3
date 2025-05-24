@@ -10,8 +10,62 @@
 
 	<body>
 		<div class="fade-bg"></div>
-		<div class="centered-form">
-			Character creation
+		<div class="centering-parent">
+		<div class="screen-column with-shadow">
+			<div class="minimap-frame">
+				<div id="minimap_background" class="minimap"></div>
+				<div id="minimap_overlay" class="minimap overlay"></div>
+			</div>
+
+			<form action="/create-character" method="post" class="game-form"> 
+				<input
+					name="name"
+					placeholder="Character name"
+				>
+
+				<select
+					id="starting_faction"
+					name="start"
+				>
+					<option value="city">
+						Human from City
+					</option>
+					<option value="steppe">
+						Human from Steppe
+					</option>
+				</select>
+
+				<input
+					type="submit"
+					name="create-character-button"
+					value="Create character"
+				>
+			</form>
+		</div>
 		</div>
 	</body>
+
+
+
+	<script>
+		const faction_bgs = {
+			city: ["minimap-background.png", "highlight-city.png"],
+			steppe: ["minimap-background.png", "highlight-steppe.png"],
+		}
+		function set_faction(faction) {
+			starting_faction.value = faction;
+			let bg = faction_bgs[faction][0];
+			let highlight = faction_bgs[faction][1];
+			minimap_background.style.backgroundImage 
+				= `url(/img/${bg})`;
+			minimap_overlay.style.backgroundImage 
+				= `url(/img/${highlight})`;
+		}
+
+		starting_faction.addEventListener('change', function() {
+			set_faction(starting_faction.value);
+		})
+
+		set_faction("city")
+	</script>
 </html>
